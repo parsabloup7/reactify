@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Reactify</title>
+  <meta name="description" content="Practice organic chemistry named reactions: identify the reaction from its scheme.">
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Reactify">
+  <meta property="og:title" content="Reactify: named reactions quiz">
+  <meta property="og:description" content="Can you name the reaction from its scheme? 130+ textbook named reactions.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <button class="brand" id="homeBtn" aria-label="Home">
+      <span class="logo" aria-hidden="true">
+        <svg viewBox="0 0 32 32" width="28" height="28"><path d="M16 3.5 26.8 9.75v12.5L16 28.5 5.2 22.25V9.75Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M9.5 12.5v7M16 8.2l6.5 3.75" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      </span>
+      <span>Reactify</span>
+    </button>
+    <div class="top-actions">
+      <span class="chip" id="dayChip" title="Daily streak">🔥 <b id="dayStreak">0</b></span>
+      <button class="icon-btn" id="themeBtn" aria-label="Toggle dark mode" title="Theme">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="app">
+    <!-- HOME -->
+    <section id="home" class="view">
+      <div class="hero">
+        <h1>Name that reaction</h1>
+        <p class="lead">Look at the scheme, pick the named reaction. <span id="rxCount">130+</span> textbook classics, with look-alike answer choices.</p>
+      </div>
+
+      <div class="stats" id="homeStats"></div>
+
+      <div class="card settings">
+        <div class="field">
+          <div class="label">Difficulty</div>
+          <div class="seg" id="levelSeg" role="radiogroup" aria-label="Difficulty">
+            <button data-v="adaptive" role="radio">Adaptive</button>
+            <button data-v="easy" role="radio">Easy</button>
+            <button data-v="medium" role="radio">Medium</button>
+            <button data-v="hard" role="radio">Hard</button>
+          </div>
+          <p class="hint" id="levelHint"></p>
+        </div>
+        <div class="field">
+          <div class="label">Round length</div>
+          <div class="seg" id="lengthSeg" role="radiogroup" aria-label="Round length">
+            <button data-v="10" role="radio">10</button>
+            <button data-v="20" role="radio">20</button>
+            <button data-v="0" role="radio">Endless</button>
+          </div>
+        </div>
+        <div class="field">
+          <div class="label">Topics <span class="muted" id="topicCount"></span></div>
+          <div class="chips" id="topicChips"></div>
+        </div>
+        <div class="actions">
+          <button class="btn primary big" id="startBtn">Start quiz</button>
+          <div class="actions-row">
+            <button class="btn" id="reviewBtn">Review mistakes</button>
+            <button class="btn" id="browseBtn">Browse reactions</button>
+          </div>
+        </div>
+      </div>
+      <p class="footer-note">Your progress is saved on this device. <button class="link" id="shareBtn">Share this quiz</button> · <button class="link" id="resetBtn">Reset progress</button></p>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz" class="view" hidden>
+      <div class="quiz-head">
+        <button class="icon-btn" id="quitBtn" aria-label="End round" title="End round">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="progress" aria-hidden="true"><div class="bar" id="progBar"></div></div>
+        <span class="chip" id="qCounter">1/10</span>
+      </div>
+      <div class="quiz-meta">
+        <span class="chip soft" id="levelBadge">Medium</span>
+        <span class="chip soft" id="runChip">Run ✓ <b id="runCount">0</b></span>
+      </div>
+
+      <div class="card scheme-card">
+        <div class="scheme-wrap" id="schemeHost"></div>
+      </div>
+
+      <h2 class="prompt">Which named reaction is this?</h2>
+      <div class="options" id="options"></div>
+
+      <div class="feedback" id="feedback" hidden></div>
+      <div class="next-row" id="nextRow" hidden>
+        <button class="btn primary big" id="nextBtn">Next <kbd>Enter</kbd></button>
+      </div>
+    </section>
+
+    <!-- RESULTS -->
+    <section id="results" class="view" hidden>
+      <div class="card result-card" id="resultCard"></div>
+      <div class="actions-row">
+        <button class="btn primary" id="againBtn">Play again</button>
+        <button class="btn" id="resultsHomeBtn">Home</button>
+      </div>
+      <div id="missedList"></div>
+    </section>
+
+    <!-- BROWSE -->
+    <section id="browse" class="view" hidden>
+      <div class="browse-head">
+        <button class="icon-btn" id="browseBack" aria-label="Back">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <input type="search" id="search" placeholder="Search reactions, reagents, topics…" autocomplete="off">
+      </div>
+      <p class="muted small" id="browseCount"></p>
+      <div id="browseList" class="browse-list"></div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
